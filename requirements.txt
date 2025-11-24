@@ -1,0 +1,7 @@
+streamlit
+matplotlib
+pandas
+python-dotenv
+numpy
+reportlab
+PyPDF2
