@@ -6,3 +6,4 @@ numpy
 reportlab
 PyPDF2
 scipy
+numpy-financial
