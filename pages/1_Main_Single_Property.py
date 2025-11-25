@@ -26,29 +26,36 @@ APP_PASSWORD = os.getenv("APP_PASSWORD", "SmartInvest1!")
 
 if "authenticated" not in st.session_state:
     st.session_state.authenticated = False
-
-# --- Show error only if wrong password after Unlock ---
-if st.session_state.get("pw_error", False):
-    st.error("❌ Incorrect password. Please try again.")
+if "pw_error" not in st.session_state:
     st.session_state.pw_error = False
 
-# --- If not authenticated, display password field + Unlock button ---
+# If user is NOT authenticated, show password UI and stop the app below
 if not st.session_state.authenticated:
 
+    # Show error only after a failed attempt
+    if st.session_state.pw_error:
+        st.error("❌ Incorrect password. Please try again.")
+        st.session_state.pw_error = False  # reset flag for next run
+
+    # Password input (masked, with browser eye icon)
     password = st.text_input(
         "🔒 Please enter access password",
         type="password"
     )
 
-    # Validate ONLY when Unlock button is pressed
+    # Validate ONLY when Unlock is pressed
     if st.button("Unlock"):
         if password == APP_PASSWORD:
+            # ✅ Mark session as authenticated and rerun so field disappears
             st.session_state.authenticated = True
+            st.rerun()
         else:
+            # ❌ Wrong password → set flag and rerun to show error
             st.session_state.pw_error = True
+            st.rerun()
 
-    if not st.session_state.authenticated:
-        st.stop()
+    # If still not authenticated after this run, stop the rest of the app
+    st.stop()
 
 # ================================
 # 📌 INPUT SIDEBAR
