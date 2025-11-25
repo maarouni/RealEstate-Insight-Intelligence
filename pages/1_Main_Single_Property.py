@@ -19,23 +19,36 @@ st.set_page_config(page_title="Single Property Evaluator", layout="centered")
 st.title("🏡 Real Estate Deal Evaluator")
 st.markdown("Analyze the investment potential of a single property.")
 
-# ================================
-# 🔐 PASSWORD GATE
-# ================================
+# ===================================
+# 🔐 CLEAN PASSWORD GATE (No extra icons)
+# ===================================
 APP_PASSWORD = os.getenv("APP_PASSWORD", "SmartInvest1!")
 
 if "authenticated" not in st.session_state:
     st.session_state.authenticated = False
 
-if not st.session_state.authenticated:
-    password = st.text_input("🔒 Please enter access password", type="password")
+# --- Show error only if wrong password after Unlock ---
+if st.session_state.get("pw_error", False):
+    st.error("❌ Incorrect password. Please try again.")
+    st.session_state.pw_error = False
 
-    if password == APP_PASSWORD:
-        st.session_state.authenticated = True
-        st.rerun()
-    elif password:
-        st.error("❌ Incorrect password. Please try again.")
-    st.stop()
+# --- If not authenticated, display password field + Unlock button ---
+if not st.session_state.authenticated:
+
+    password = st.text_input(
+        "🔒 Please enter access password",
+        type="password"
+    )
+
+    # Validate ONLY when Unlock button is pressed
+    if st.button("Unlock"):
+        if password == APP_PASSWORD:
+            st.session_state.authenticated = True
+        else:
+            st.session_state.pw_error = True
+
+    if not st.session_state.authenticated:
+        st.stop()
 
 # ================================
 # 📌 INPUT SIDEBAR
